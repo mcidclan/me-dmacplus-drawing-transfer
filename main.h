@@ -34,10 +34,16 @@ inline void meGetUncached32(volatile u32** const mem, const u32 size) {
     free(_base);
   }
   *mem = nullptr;
-  sceKernelDcacheWritebackInvalidateAll();
   return;
 }
 
 inline void meHalt() {
   asm volatile(".word 0x70000000");
+}
+
+inline void vmeSetMinimalConfig() {
+  hw(0xBCC00000) = -1;
+  hw(0xBCC00030) = 1;
+  hw(0xBCC00040) = 1;
+  asm volatile("sync");
 }

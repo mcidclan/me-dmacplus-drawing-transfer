@@ -69,10 +69,12 @@ extern char __start__me_section;
 extern char __stop__me_section;
 __attribute__((section("_me_section")))
 void meHandler() {
+  hw(0xbc100040) = 0x02;        // Allows 64MB ram
   hw(0xbc100050) = 0x0f;        // Enable ME, AW bus (RegA, RegB & Edram) clocks
   hw(0xbc100004) = 0xffffffff;  // Enable NMIs
-  hw(0xbc100040) = 0x02;        // Allows 64MB ram
   asm("sync");
+  
+  vmeSetMinimalConfig();
   
   asm volatile(
     "li          $k0, 0x30000000\n"

@@ -4,7 +4,7 @@ This repository provides a sample implementation for transferring data between t
 It draws one half of a 'clock' on the Me side and the other half on the Sc side, then gathers the data using two DMACPlus channels and LLIs.
 
 # Requirements
-Run `./build.sh` from a bash shell.
+Run `make clean; make;` from a bash shell.
 
 ## Special Thanks To
 - Contributors to psdevwiki.
