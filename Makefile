@@ -22,8 +22,10 @@ CFLAGS = -I. -I$(PSPSDK)/include -I/usr/local/pspdev/psp/sdk/include -Ofast -G0 
 CXXFLAGS = $(CFLAGS) -fno-exceptions -fno-rtti -std=c++11
 ASFLAGS = $(CFLAGS) -x assembler-with-cpp
 LDFLAGS = -L. -L$(PSPSDK)/lib -L/usr/local/pspdev/psp/sdk/lib \
-          -lpsppower -lpspdebug -lpspdisplay -lpspge -lpspctrl \
-          -lpspsdk -lc -lpspuser -lpspkernel -lm
+          -Wl,-zmax-page-size=128 -Wl,-q
+
+LIBS = -lpsppower -lpspdebug -lpspdisplay -lpspge -lpspctrl \
+       -lpspsdk -lc -lpspuser -lpspkernel -lm
 
 PSP_EBOOT_SFO = $(BINOUT)PARAM.SFO
 PSP_EBOOT_TITLE = Me Dmacplus Transfer
@@ -40,7 +42,7 @@ kcall.S: kernel
   
   
 $(TARGET).elf: $(OBJS)
-	$(CC) $(CFLAGS) $^ $(LDFLAGS) -o $@
+	$(CC) $(CFLAGS) $^ $(LDFLAGS) -o $@ $(LIBS)
 
 $(PATHOBJS)%.o: $(PATHSRC)%.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
