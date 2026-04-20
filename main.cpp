@@ -221,7 +221,7 @@ int main() {
   pspDebugScreenInitEx(0, PSP_DISPLAY_PIXEL_FORMAT_8888, 0);
   pspDebugScreenSetOffset(0);
 
-  if (pspSdkLoadStartModule("ms0:/PSP/GAME/me/kcall.prx", PSP_MEMORY_PARTITION_KERNEL) < 0){
+  if (pspSdkLoadStartModule("./kcall.prx", PSP_MEMORY_PARTITION_KERNEL) < 0){
     exitSample("Can't load the PRX, exiting...");
     return 0;
   }

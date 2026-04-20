@@ -15,35 +15,42 @@ OBJS := $(sort $(OBJS:%.o=$(PATHOBJS)%.o))
 
 PSPSDK = $(shell psp-config --pspsdk-path)
 
-CFLAGS = -I. -I$(PSPSDK)/include -I/usr/local/pspdev/psp/sdk/include -Ofast -G0 -Wall -fno-pic \
+CFLAGS = -I. -I$(PSPSDK)/include -I/usr/local/pspdev/psp/sdk/include -Os -G0 -Wall \
          -I./kernel/src -D_PSP_FW_VERSION=660 \
          -Wextra -Werror
 
 CXXFLAGS = $(CFLAGS) -fno-exceptions -fno-rtti -std=c++11
 ASFLAGS = $(CFLAGS) -x assembler-with-cpp
+
 LDFLAGS = -L. -L$(PSPSDK)/lib -L/usr/local/pspdev/psp/sdk/lib \
-          -Wl,-zmax-page-size=128 -Wl,-q
+          -Wl,-zmax-page-size=128 -Wl,-q \
+          -specs=$(PSPSDK)/lib/prxspecs \
+          -Wl,-T$(PSPSDK)/lib/linkfile.prx
 
 LIBS = -lpspdebug -lpspdisplay -lpspge -lpspctrl \
-       -lpspnet -lpspnet_apctl -lpspsdk -lpspkernel -lpspuser \
-       -lpsppower -lc  -lm
-       
+       -lpspnet -lpspsdk -lpsppower -lc -lm
+
+EXPORT_OBJ = $(PSPSDK)/lib/prxexports.o
+
 PSP_EBOOT_SFO = $(BINOUT)PARAM.SFO
 PSP_EBOOT_TITLE = Me Dmacplus Transfer
 
 .PHONY: kernel
 
-all: kernel $(TARGET).elf $(BINOUT)EBOOT.PBP
+all: kernel $(TARGET).elf $(TARGET).prx $(BINOUT)EBOOT.PBP
 
 kernel:
 	$(MAKE) -C ./kernel
 
 kcall.S: kernel
 	@
-  
-  
-$(TARGET).elf: $(OBJS)
+
+$(TARGET).elf: $(OBJS) $(EXPORT_OBJ)
 	$(CC) $(CFLAGS) $^ $(LDFLAGS) -o $@ $(LIBS)
+	psp-fixup-imports $@
+
+$(TARGET).prx: $(TARGET).elf
+	psp-prxgen $< $@
 
 $(PATHOBJS)%.o: $(PATHSRC)%.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
@@ -52,7 +59,6 @@ $(PATHOBJS)%.o: $(PATHSRC)%.S
 	$(CC) $(ASFLAGS) -c $< -o $@
 
 $(BINOUT)EBOOT.PBP: $(TARGET).elf
-	psp-fixup-imports $(TARGET).elf
 	mksfo "$(PSP_EBOOT_TITLE)" $(PSP_EBOOT_SFO)
 	psp-strip $(TARGET).elf -o $(TARGET)_strip.elf
 	pack-pbp $(BINOUT)EBOOT.PBP $(PSP_EBOOT_SFO) NULL \

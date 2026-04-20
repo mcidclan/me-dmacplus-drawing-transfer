@@ -13,6 +13,9 @@ Run `make clean; make;` from a bash shell.
 - *crazyc* from ps2dev.org, for pioneering discoveries related to the Media Engine.
 - All developers and contributors who have supported and continue to support the scene.
 
+## Disclamer
+This project and code are provided as-is without warranty. Users assume full responsibility for any implementation or consequences. Use at your own discretion and risk
+
 # resources:
 - [psp wiki on PSDevWiki](https://www.psdevwiki.com/psp/)
 - [uofw on GitHub](https://github.com/uofw/uofw)
